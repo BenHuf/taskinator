@@ -1,2 +1,2 @@
 # taskinator
-Kansan board for personal tasks
+Kanban board for personal tasks
