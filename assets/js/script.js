@@ -225,5 +225,70 @@ var saveTasks = function() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
+
+// get task items from local storage
+// conver tasks from the string formate back to array of objects
+// iterate through array and create task elements on the page
+var loadTasks = function() {
+    tasks = localStorage.getItem("tasks");
+    console.log(tasks);
+
+    if (!tasks) {
+        tasks = [];
+        return false;
+    }
+
+    tasks = JSON.parse(tasks);
+    console.log(tasks);
+
+    var loadedTasks = [];
+    
+    for (var i = 0; i < tasks.length; i++) {
+        // reassign id to match current taskIdCounter
+        tasks[i].id = taskIdCounter;
+
+        // create list item
+        var listItemEl = document.createElement("li");
+        listItemEl.className = "task-item";
+        listItemEl.setAttribute("data-task-id", tasks[i].id);
+
+        // create div to hold task info and add to list item
+        var taskInfoEl = document.createElement("div");
+        taskInfoEl.className = "task-info";
+        taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>";
+        
+        // create task actions 
+        var taskActionsEl = createTaskActions(tasks[i].id);
+
+        // add task info and task actions to list item
+        listItemEl.appendChild(taskInfoEl);
+        listItemEl.appendChild(taskActionsEl);
+
+        // add entire list item to appropiate list
+        if (tasks[i].status === "to do") {
+            tasksToDoEl.appendChild(listItemEl);
+        }
+        else if (tasks[i].status === "in progress") {
+            tasksInProgressEl.appendChild(listItemEl);
+        }
+        else if (tasks[i].status === "completed") {
+            tasksCompletedEl.appendChild(listItemEl);
+        }
+
+        // push to staging array so it doesnt add infite tasks!
+        loadedTasks.push(tasks[i]);
+        
+        // increase task Id Counter so every element has unique Id
+        taskIdCounter++;
+    }
+
+    // update tasks array with new Ids
+    tasks = loadedTasks;
+    // save tasks
+    saveTasks();
+}
+
+loadTasks();
+
 pageContentEl.addEventListener("click", taskButtonHandler)
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
